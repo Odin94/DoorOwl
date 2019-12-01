@@ -25,6 +25,7 @@ config :shoehorn,
 # configuring ring_logger.
 
 config :logger, backends: [RingLogger]
+config :door_owl, :perma_led_pin, 26
 
 if Mix.target() != :host do
   import_config "target.exs"
