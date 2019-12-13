@@ -22,6 +22,7 @@ echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
 echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc # optional
 source ~/.bashrc
 
+echo "If asdf is not found, try removing ~/.asdf and running this script without sudo"
 asdf plugin-add erlang
 asdf plugin-add elixir
 
