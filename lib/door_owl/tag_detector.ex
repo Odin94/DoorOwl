@@ -6,7 +6,7 @@ defmodule DoorOwl.TagDetector do
 
   # API
 
-  def start_link do
+  def start_link(state \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
@@ -30,6 +30,7 @@ defmodule DoorOwl.TagDetector do
   def init(:ok) do
     {:ok, %{}}
   end
+  def init(state), do: {:ok, state}
 
   def handle_cast({:add, id}, state) do
     Logger.debug("handle adding #{id} from #{map_to_str(state)}")

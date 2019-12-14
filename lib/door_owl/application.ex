@@ -4,6 +4,7 @@ defmodule DoorOwl.Application do
   @moduledoc false
 
   use Application
+  require Logger
 
   def start(_type, _args) do
     # See https://hexdocs.pm/elixir/Supervisor.html
@@ -15,7 +16,7 @@ defmodule DoorOwl.Application do
         # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
         # {DoorOwl.Worker, arg},
         {DoorOwl.Blinker, []},
-        {DoorOwl.TagDetector, []}
+        # {DoorOwl.TagDetector, []}
       ] ++ children(target())
 
     Supervisor.start_link(children, opts)
