@@ -12,6 +12,12 @@ config :door_owl, target: Mix.target()
 
 config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 
+# Config init_gadget to connect and update nerves over ethernet
+config :nerves_init_gadget,
+  ifname: "eth0",
+  address_method: :dhcp,
+  node_name: "murphy"
+
 # Use shoehorn to start the main application. See the shoehorn
 # docs for separating out critical OTP applications such as those
 # involved with firmware updates.
