@@ -14,13 +14,6 @@ echo "Installing tools required for custom nerves systems"
 sudo apt install libssl-dev libncurses5-dev bc m4 unzip cmake python -y
 
 echo "Installing erlang / elixir"
-git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.1
-
-# The following steps are for bash. If you’re using something else, do the
-# equivalent for your shell.
-echo -e '\n. $HOME/.asdf/asdf.sh' >> ~/.bashrc
-echo -e '\n. $HOME/.asdf/completions/asdf.bash' >> ~/.bashrc # optional
-source ~/.bashrc
 
 echo "If asdf is not found, try removing ~/.asdf and running this script without sudo"
 asdf plugin-add erlang
