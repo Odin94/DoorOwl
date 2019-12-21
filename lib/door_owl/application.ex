@@ -15,11 +15,12 @@ defmodule DoorOwl.Application do
         # Children for all targets
         # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
         # {DoorOwl.Worker, arg},
-        {DoorOwl.Blinker, []},
+        # {DoorOwl.Blinker, []},
         # {DoorOwl.TagDetector, []}
       ] ++ children(target())
 
-    Supervisor.start_link(children, opts)
+    DoorOwl.Blinky.start()
+    # Supervisor.start_link(children, opts)
   end
 
   # List all child processes to be supervised
