@@ -52,7 +52,7 @@ config :nerves_firmware_ssh,
 
 # Setting the node_name will enable Erlang Distribution.
 # Only enable this for prod if you understand the risks.
-node_name = if Mix.env() != :prod, do: "blinky"
+node_name = if Mix.env() != :prod, do: "doorowl"
 
 config :nerves_init_gadget,
   ifname: "eth0",
