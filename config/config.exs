@@ -5,8 +5,6 @@
 # is restricted to this project.
 use Mix.Config
 
-config :door_owl, target: Mix.target()
-
 # Customize non-Elixir parts of the firmware. See
 # https://hexdocs.pm/nerves/advanced-configuration.html for details.
 
@@ -19,6 +17,12 @@ config :nerves, :firmware, rootfs_overlay: "rootfs_overlay"
 config :shoehorn,
   init: [:nerves_runtime, :nerves_init_gadget, :nerves_network],
   app: Mix.Project.config()[:app]
+
+# Use Ringlogger as the logger backend and remove :console.
+# See https://hexdocs.pm/ring_logger/readme.html for more information on
+# configuring ring_logger.
+
+config :logger, backends: [RingLogger]
 
 # Authorize the device to receive firmware using your public key.
 # See https://hexdocs.pm/nerves_firmware_ssh/readme.html for more information
@@ -48,7 +52,7 @@ config :nerves_firmware_ssh,
 
 # Setting the node_name will enable Erlang Distribution.
 # Only enable this for prod if you understand the risks.
-node_name = if Mix.env() != :prod, do: "door_owl"
+node_name = if Mix.env() != :prod, do: "blinky"
 
 config :nerves_init_gadget,
   ifname: "eth0",
@@ -60,22 +64,16 @@ config :nerves_init_gadget,
 config :nerves_network, :default,
   eth0: [
     ipv4_address_method: :static,
-    ipv4_address: "172.31.60.17",
+    ipv4_address: "192.168.88.2",
     ipv4_subnet_mask: "255.255.255.0",
     nameservers: ["8.8.8.8", "8.8.4.4"]
   ]
 
-# Use Ringlogger as the logger backend and remove :console.
-# See https://hexdocs.pm/ring_logger/readme.html for more information on
-# configuring ring_logger.
-
-config :logger, backends: [RingLogger]
 config :door_owl, :perma_led_pin, 4
+config :door_owl, target: Mix.target()
 
-# rpi3 blink configs
-config :door_owl, led_list: [:green]
-config :nerves_leds, names: [green: "led0"]
+# Import target specific config. This must remain at the bottom
+# of this file so it overrides the configuration defined above.
+# Uncomment to use target specific configurations
 
-if Mix.target() != :host do
-  import_config "target.exs"
-end
+import_config "#{Mix.target()}.exs"
