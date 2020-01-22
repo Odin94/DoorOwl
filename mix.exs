@@ -43,7 +43,6 @@ defmodule DoorOwl.MixProject do
       {:shoehorn, "~> 0.6"},
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
-      {:nerves_pack, "~> 0.1.0"},  # might cause trouble with existing networking stuff and/or nerves_init_gadget
       {:elixir_ale, "~> 1.2"},
       {:nerves_runtime, "~> 0.10"},
 
