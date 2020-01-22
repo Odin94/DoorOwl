@@ -15,8 +15,8 @@ defmodule DoorOwl.Application do
         # Children for all targets
         # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
         # {DoorOwl.Worker, arg},
-        # {DoorOwl.Blinker, []},
-        # {DoorOwl.TagDetector, []}
+        {DoorOwl.Blinker, []},
+        {DoorOwl.TagDetector, []}
       ] ++ children(target())
 
     DoorOwl.Blinky.start()
@@ -37,6 +37,9 @@ defmodule DoorOwl.Application do
       # Children for all targets except host
       # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
       # {DoorOwl.Worker, arg},
+      {Harald.Transport,
+       namespace: :green_llama,
+       adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
     ]
   end
 

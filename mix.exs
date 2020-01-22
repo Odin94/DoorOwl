@@ -39,6 +39,7 @@ defmodule DoorOwl.MixProject do
   defp deps do
     [
       # Dependencies for all targets
+      {:harald, "0.1.1"},
       {:nerves, "~> 1.5.0", runtime: false},
       {:shoehorn, "~> 0.6"},
       {:ring_logger, "~> 0.6"},
