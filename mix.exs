@@ -45,9 +45,9 @@ defmodule DoorOwl.MixProject do
       {:toolshed, "~> 0.2"},
       {:nerves_pack, "~> 0.1.0"},  # might cause trouble with existing networking stuff and/or nerves_init_gadget
       {:elixir_ale, "~> 1.2"},
+      {:nerves_runtime, "~> 0.10"},
 
       # Dependencies for all targets except :host
-      {:nerves_runtime, "~> 0.6", targets: @all_targets},
       {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
       {:nerves_leds, "~> 0.8", targets: @all_targets},
 
