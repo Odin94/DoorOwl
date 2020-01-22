@@ -44,9 +44,9 @@ defmodule DoorOwl.MixProject do
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
       {:elixir_ale, "~> 1.2"},
-      {:nerves_runtime, "~> 0.10"},
 
       # Dependencies for all targets except :host
+      {:nerves_runtime, "~> 0.10"},
       {:nerves_init_gadget, "~> 0.4", targets: @all_targets},
       {:nerves_leds, "~> 0.8", targets: @all_targets},
 
