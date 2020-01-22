@@ -22,7 +22,7 @@ defmodule DoorOwl.Blinker do
     {:ok, [led_pid | args]}
   end
 
-  def handle_info(:blink, state = [led_pid | tail]) do
+  def handle_info(:blink, state = [led_pid | _tail]) do
     Logger.debug("In handle_info with pin id: #{inspect led_pid}")
     blink_led(led_pid, @blink_ms)
     Logger.debug("Done blinking once, scheduling new blink")
