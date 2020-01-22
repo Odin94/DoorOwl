@@ -43,6 +43,7 @@ defmodule DoorOwl.MixProject do
       {:shoehorn, "~> 0.6"},
       {:ring_logger, "~> 0.6"},
       {:toolshed, "~> 0.2"},
+      {:nerves_pack, "~> 0.1.0"},  # might cause trouble with existing networking stuff and/or nerves_init_gadget
       {:elixir_ale, "~> 1.2"},
 
       # Dependencies for all targets except :host
@@ -58,7 +59,7 @@ defmodule DoorOwl.MixProject do
       {:nerves_system_rpi3a, "~> 1.8", runtime: false, targets: :rpi3a},
       {:nerves_system_rpi4, "~> 1.8", runtime: false, targets: :rpi4},
       {:nerves_system_bbb, "~> 2.3", runtime: false, targets: :bbb},
-      {:nerves_system_x86_64, "~> 1.8", runtime: false, targets: :x86_64},
+      {:nerves_system_x86_64, "~> 1.8", runtime: false, targets: :x86_64}
     ]
   end
 
