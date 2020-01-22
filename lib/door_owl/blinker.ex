@@ -13,15 +13,18 @@ defmodule DoorOwl.Blinker do
 
   def init(args) do
     Logger.debug("Starting pin #{@led_pin} as output")
+    {:ok, led_pid} = GPIO.start_link(@led_pin, :output)
+    Logger.debug("Started GPIO server for led #{@led_pin} - pid is #{inspect led_pid}")
 
     # spawn(__MODULE__, :blink_led_forever, [@led_pin, @blink_ms])
     schedule_blink()
 
-    {:ok, args}
+    {:ok, [led_pid | args]}
   end
 
-  def handle_info(:blink, state \\ []) do
-    blink_led(@led_pin, @blink_ms)
+  def handle_info(:blink, state = [led_pid | tail]) do
+    Logger.debug("In handle_info with pin id: #{inspect led_pid}")
+    blink_led(led_pid, @blink_ms)
     Logger.debug("Done blinking once, scheduling new blink")
     schedule_blink()
 
@@ -32,17 +35,17 @@ defmodule DoorOwl.Blinker do
     Process.send_after(self(), :blink, 1000)
   end
 
-  def blink_led(pin, blink_ms) do
+  def blink_led(led_pid, blink_ms) do
     Logger.debug("Blinking once")
-    Logger.debug("Blinking pin #{pin} for #{blink_ms}ms once")
+    Logger.debug("Blinking pin #{@led_pin} for #{blink_ms}ms once")
 
-    GPIO.write(pin, 1)
+    GPIO.write(led_pid, 1)
     Logger.debug("LED on")
-    :timer.sleep(blink_ms)
-    GPIO.write(pin, 0)
+    Process.sleep(blink_ms)
+    GPIO.write(led_pid, 0)
     Logger.debug("LED off")
 
-    {:noreply, []}
+    {:noreply, [led_pid]}
   end
 
   def blink_led_forever(pin, blink_ms) do
@@ -50,9 +53,9 @@ defmodule DoorOwl.Blinker do
     Logger.debug("Blinking pin #{pin} for #{blink_ms}ms")
 
     GPIO.write(pin, 1)
-    :timer.sleep(blink_ms)
+    Process.sleep(blink_ms)
     GPIO.write(pin, 0)
-    :timer.sleep(blink_ms)
+    Process.sleep(blink_ms)
 
     blink_led_forever(pin, blink_ms)
   end
