@@ -15,13 +15,34 @@ defmodule DoorOwl.Application do
         # Children for all targets
         # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
         # {DoorOwl.Worker, arg},
-        {DoorOwl.Blinker, []},
-        {DoorOwl.TagDetector, []}
+        # {DoorOwl.Blinker, []},
+        # {DoorOwl.TagDetector, []},
       ] ++ children(target())
 
     DoorOwl.Blinky.start()
     # Supervisor.start_link(children, opts)
   end
+
+  # def start_tagdetector() do
+  #   opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
+  #   children =
+  #     [
+  #       {DoorOwl.TagDetector, []},
+  #     ]
+
+  #   Supervisor.start_link(children, opts)
+  # end
+
+  # def start_harald(name \\ :bt) do
+  #   opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
+  #   children = [
+  #      {Harald.Transport,
+  #      namespace: name,
+  #      adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
+  #   ]
+
+  #   Supervisor.start_link(children, opts)
+  # end
 
   # List all child processes to be supervised
   def children(:host) do
@@ -37,9 +58,9 @@ defmodule DoorOwl.Application do
       # Children for all targets except host
       # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
       # {DoorOwl.Worker, arg},
-      {Harald.Transport,
-       namespace: :green_llama,
-       adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
+      # {Harald.Transport,
+      #  namespace: :bt,
+      #  adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
     ]
   end
 

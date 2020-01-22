@@ -4,50 +4,50 @@ defmodule DoorOwl.TagDetector do
 
   @name __MODULE__
 
+  @red_tag_addr 281_470_682_535_523
+
   # API
 
   def start_link(state \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
-  def add_tag(id) do
-    Logger.debug("adding #{id}")
-    GenServer.cast(@name, {:add, id})
-  end
-
-  def delete_tag(id) do
-    Logger.debug("removing #{id}")
-    GenServer.cast(@name, {:delete, id})
-  end
-
-  def tags_in_range() do
-    Logger.debug("getting tags")
-    GenServer.call(@name, :tags)
-  end
-
   # Callbacks
 
-  def init(:ok) do
-    {:ok, %{}}
-  end
-  def init(state), do: {:ok, state}
+  def init(:ok), do: init(%{})
 
-  def handle_cast({:add, id}, state) do
-    Logger.debug("handle adding #{id} from #{map_to_str(state)}")
-    new_state = Map.put(state, id, "This should probably be a set instead of a map lol")
-    {:noreply, new_state}
-  end
+  def init(state) do
+    # result = Supervisor.start_link(
+    #   {Harald.Transport,
+    #    namespace: :bt,
+    #    adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}},
+    #   strategy: :one_for_one,
+    #   name: DoorOwl.Supervisor
+    # )
+    # Logger.debug("harald start: #{inspect result}")
 
-  def handle_cast({:delete, id}, state) do
-    Logger.debug("handle removing #{id} from #{map_to_str(state)}")
-    new_state = Map.delete(state, id)
-    {:noreply, new_state}
-  end
+    schedule_scan()
 
-  def handle_call(:tags, _from, state) do
-    Logger.debug("handle returning state: #{map_to_str(state)}")
-    {:reply, state, state}
+    {:ok, state}
   end
 
-  defp map_to_str(map), do: Enum.map_join(map, ", ", fn {key, val} -> ~s{"#{key}", "#{val}"} end)
+  def handle_info(:scan, state) do
+    addr_rss = Harald.LE.scan(:bt) |> device_maps_to_addr_and_rss()
+    Logger.debug("Scan result: #{inspect(addr_rss)}")
+    addr_rss_red = Enum.find(addr_rss, fn {addr, _rss} -> addr == @red_tag_addr end)
+    Logger.debug("addr_rss_red: #{inspect(addr_rss_red)}")
+
+    schedule_scan()
+
+    {:noreply, state}
+  end
+
+  # Helpers
+
+  defp schedule_scan() do
+    Process.send_after(self(), :scan, 5000)
+  end
+
+  defp device_maps_to_addr_and_rss(device_maps),
+    do: Enum.map(device_maps, fn {addr, device} -> {addr, device.rss} end)
 end

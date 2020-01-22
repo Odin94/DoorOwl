@@ -11,6 +11,8 @@ defmodule DoorOwl.Blinker do
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
+  # Callbacks
+
   def init(args) do
     Logger.debug("Starting pin #{@led_pin} as output")
     {:ok, led_pid} = GPIO.start_link(@led_pin, :output)
@@ -29,10 +31,6 @@ defmodule DoorOwl.Blinker do
     schedule_blink()
 
     {:noreply, state}
-  end
-
-  def schedule_blink() do
-    Process.send_after(self(), :blink, 1000)
   end
 
   def blink_led(led_pid, blink_ms) do
@@ -58,5 +56,11 @@ defmodule DoorOwl.Blinker do
     Process.sleep(blink_ms)
 
     blink_led_forever(pin, blink_ms)
+  end
+
+  # Helpers
+
+  defp schedule_blink() do
+    Process.send_after(self(), :blink, 1000)
   end
 end
