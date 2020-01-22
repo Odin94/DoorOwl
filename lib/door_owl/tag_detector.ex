@@ -45,7 +45,7 @@ defmodule DoorOwl.TagDetector do
   # Helpers
 
   defp schedule_scan() do
-    Process.send_after(self(), :scan, 5000)
+    Process.send_after(self(), :scan, 2000)
   end
 
   defp device_maps_to_addr_and_rss(device_maps),

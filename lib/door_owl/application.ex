@@ -20,29 +20,22 @@ defmodule DoorOwl.Application do
       ] ++ children(target())
 
     DoorOwl.Blinky.start()
+    # start_tagdetector()
     # Supervisor.start_link(children, opts)
   end
 
-  # def start_tagdetector() do
-  #   opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
-  #   children =
-  #     [
-  #       {DoorOwl.TagDetector, []},
-  #     ]
+  def start_tagdetector(name \\ :bt) do
+    opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
+    children =
+      [
+        {Harald.Transport,
+       namespace: name,
+       adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}},
+        {DoorOwl.TagDetector, []},
+      ]
 
-  #   Supervisor.start_link(children, opts)
-  # end
-
-  # def start_harald(name \\ :bt) do
-  #   opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
-  #   children = [
-  #      {Harald.Transport,
-  #      namespace: name,
-  #      adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
-  #   ]
-
-  #   Supervisor.start_link(children, opts)
-  # end
+    Supervisor.start_link(children, opts)
+  end
 
   # List all child processes to be supervised
   def children(:host) do
