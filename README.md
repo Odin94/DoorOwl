@@ -1,30 +1,29 @@
 # DoorOwl
-Nerves application for tracking whether you're carrying your keys, wallet, phone etc. on you when leaving the door.
 
-Put small bluetooth tags on any item you want to have on you when you leave your house and door owl will signal what items you are missing when you walk past it.
+**TODO: Add description**
 
-## Install Dependencies
-On Ubuntu:
+## Targets
 
-* Run `install_asdf.sh` to install [asdf](https://github.com/asdf-vm/asdf)
-* Run `install_nerves_unbuntu.sh` to install required Erlang, Elixir & Nerves versions + their dependencies
+Nerves applications produce images for hardware targets based on the
+`MIX_TARGET` environment variable. If `MIX_TARGET` is unset, `mix` builds an
+image that runs on the host (e.g., your laptop). This is useful for executing
+logic tests, running utilities, and debugging. Other targets are represented by
+a short name like `rpi3` that maps to a Nerves system image for that platform.
+All of this logic is in the generated `mix.exs` and may be customized. For more
+information about targets see:
 
-Other Platforms:
+https://hexdocs.pm/nerves/targets.html#content
 
-* Read [Nerves installation docs](https://hexdocs.pm/nerves/0.3.0/installation.html)
+## Getting Started
 
-(Windows is not supported by Nerves at time of writing)
+To start your Nerves app:
+  * `export MIX_TARGET=my_target` or prefix every command with
+    `MIX_TARGET=my_target`. For example, `MIX_TARGET=rpi3`
+  * Install dependencies with `mix deps.get`
+  * Create firmware with `mix firmware`
+  * Burn to an SD card with `mix firmware.burn`
 
-
-## Install DoorOwl
-* Set `MIX_TARGET` target platform environment variable, eg `MIX_TARGET=rpi3`  (see [Nerves docs](https://hexdocs.pm/nerves/targets.html#content
-))
-* Install dependencies with `mix deps.get`
-* Create firmware with `mix firmware`
-* Burn to an SD card with `mix firmware.burn`
-
-
-## Learn more about Nerves
+## Learn more
 
   * Official docs: https://hexdocs.pm/nerves/getting-started.html
   * Official website: https://nerves-project.org/
