@@ -10,30 +10,20 @@ defmodule DoorOwl.Application do
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
+
     children =
       [
         # Children for all targets
         # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
         # {DoorOwl.Worker, arg},
         # {DoorOwl.Blinker, []},
-        # {DoorOwl.TagDetector, []},
+        {Harald.Transport,
+         namespace: :bt,
+         adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}},
+        {DoorOwl.TagDetector, []}
       ] ++ children(target())
 
-    DoorOwl.Blinky.start()
-    # start_tagdetector()
-    # Supervisor.start_link(children, opts)
-  end
-
-  def start_tagdetector(name \\ :bt) do
-    opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
-    children =
-      [
-        {Harald.Transport,
-       namespace: name,
-       adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}},
-        {DoorOwl.TagDetector, []},
-      ]
-
+    # DoorOwl.Blinky.start()
     Supervisor.start_link(children, opts)
   end
 

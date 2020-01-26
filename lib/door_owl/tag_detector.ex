@@ -17,22 +17,15 @@ defmodule DoorOwl.TagDetector do
   def init(:ok), do: init(%{})
 
   def init(state) do
-    # result = Supervisor.start_link(
-    #   {Harald.Transport,
-    #    namespace: :bt,
-    #    adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}},
-    #   strategy: :one_for_one,
-    #   name: DoorOwl.Supervisor
-    # )
-    # Logger.debug("harald start: #{inspect result}")
-
     schedule_scan()
 
     {:ok, state}
   end
 
   def handle_info(:scan, state) do
-    addr_rss = Harald.LE.scan(:bt) |> device_maps_to_addr_and_rss()
+    scan_result = Harald.LE.scan(:bt)
+    Logger.debug("Original: #{inspect scan_result}")
+    addr_rss = scan_result |> device_maps_to_addr_and_rss()
     Logger.debug("Scan result: #{inspect(addr_rss)}")
     addr_rss_red = Enum.find(addr_rss, fn {addr, _rss} -> addr == @red_tag_addr end)
     Logger.debug("addr_rss_red: #{inspect(addr_rss_red)}")
