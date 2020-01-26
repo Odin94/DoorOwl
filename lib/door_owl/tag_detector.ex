@@ -4,6 +4,8 @@ defmodule DoorOwl.TagDetector do
 
   @name __MODULE__
 
+  @proximity_treshold 182
+
   @red_tag_addr 281_470_682_535_523
 
   # API
@@ -31,11 +33,14 @@ defmodule DoorOwl.TagDetector do
 
   def handle_info(:scan, state) do
     scan_result = Harald.LE.scan(:bt)
-    Logger.debug("Original: #{inspect(scan_result)}")
+    # Logger.debug("Original: #{inspect(scan_result)}")
     addr_rss = scan_result |> device_maps_to_addr_and_rss()
     Logger.debug("Scan result: #{inspect(addr_rss)}")
     addr_rss_red = Enum.find(addr_rss, fn {addr, _rss} -> addr == @red_tag_addr end)
     Logger.debug("addr_rss_red: #{inspect(addr_rss_red)}")
+
+    # TODO: set all leds depending on rss. Don't forget addresses that don't show up in the scan
+    set_led(addr_rss_red)
 
     schedule_scan()
 
@@ -43,6 +48,18 @@ defmodule DoorOwl.TagDetector do
   end
 
   # Helpers
+
+  defp set_led({tag_addr, rss}) when rss >= @proximity_treshold do
+    Logger.debug("---- turning on the lights ----")
+  end
+
+  defp set_led({tag_addr, rss}) do
+    Logger.debug("RSS too low: #{rss} < #{@proximity_treshold}")
+  end
+
+  defp set_led(_) do
+    Logger.debug("Signal not found")
+  end
 
   defp schedule_scan() do
     Process.send_after(self(), :scan, 200)
