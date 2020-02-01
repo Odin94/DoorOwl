@@ -3,9 +3,7 @@ defmodule DoorOwl.TagDetector do
   require Logger
 
   @name __MODULE__
-
   @proximity_treshold 182
-
   @red_tag_addr 281_470_682_535_523
 
   # API

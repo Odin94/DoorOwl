@@ -11,19 +11,19 @@ defmodule DoorOwl.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: DoorOwl.Supervisor]
 
+    harald =
+      {Harald.Transport,
+       namespace: :bt,
+       adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
+
+    tag_detector = {DoorOwl.TagDetector, []}
+
     children =
       [
-        # Children for all targets
-        # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
-        # {DoorOwl.Worker, arg},
-        # {DoorOwl.Blinker, []},
-        {Harald.Transport,
-         namespace: :bt,
-         adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}},
-        {DoorOwl.TagDetector, []}
+        harald,
+        tag_detector
       ] ++ children(target())
 
-    # DoorOwl.Blinky.start()
     Supervisor.start_link(children, opts)
   end
 
@@ -41,9 +41,6 @@ defmodule DoorOwl.Application do
       # Children for all targets except host
       # Starts a worker by calling: DoorOwl.Worker.start_link(arg)
       # {DoorOwl.Worker, arg},
-      # {Harald.Transport,
-      #  namespace: :bt,
-      #  adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
     ]
   end
 
