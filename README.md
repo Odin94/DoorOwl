@@ -34,9 +34,11 @@ Put LEDs matching cable color on breadboard column C matching the positive side 
 
 Put a cable on the minus side of the breadboard, right below the resistor for the green led. Connect it to the ground pin on your device.
 
-LED GPIO pins can be edited in `config/config.exs`.
+LED GPIO pins can be edited in `config/config.exs` .
 
 ## Bluetooth Tag Setup
+
+Bluetooth addresses that are mapped to LEDs and the required signal strength proximity threshold can be edited in `config/config.exs` .
 
 ## Learn more about nerves
 
