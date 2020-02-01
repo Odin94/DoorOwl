@@ -1,24 +1,26 @@
-defmodule DoorOwl.Blinker do
+defmodule DoorOwl.LedController do
   use GenServer
   require Logger
   alias ElixirALE.GPIO
 
-  @led_pin Application.get_env(:door_owl, :perma_led_pin)
+  @led_pin_red Application.get_env(:door_owl, :led_pin_red)
+  @led_pin_green Application.get_env(:door_owl, :led_pin_green)
+  @led_pin_white Application.get_env(:door_owl, :led_pin_white)
+
   @blink_ms 1000
 
   def start_link(state \\ []) do
-    Logger.debug("starting link in blinker")
+    Logger.debug("starting link in led_controller")
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
   # Callbacks
 
   def init(args) do
-    Logger.debug("Starting pin #{@led_pin} as output")
-    {:ok, led_pid} = GPIO.start_link(@led_pin, :output)
-    Logger.debug("Started GPIO server for led #{@led_pin} - pid is #{inspect led_pid}")
+    Logger.debug("Starting pin #{@led_pin_red} as output")
+    {:ok, led_pid} = GPIO.start_link(@led_pin_red, :output)
+    Logger.debug("Started GPIO server for led #{@led_pin_red} - pid is #{inspect led_pid}")
 
-    # spawn(__MODULE__, :blink_led_forever, [@led_pin, @blink_ms])
     schedule_blink()
 
     {:ok, [led_pid | args]}
@@ -35,7 +37,7 @@ defmodule DoorOwl.Blinker do
 
   def blink_led(led_pid, blink_ms) do
     Logger.debug("Blinking once")
-    Logger.debug("Blinking pin #{@led_pin} for #{blink_ms}ms once")
+    Logger.debug("Blinking pin #{@led_pin_red} for #{blink_ms}ms once")
 
     GPIO.write(led_pid, 1)
     Logger.debug("LED on")
@@ -44,18 +46,6 @@ defmodule DoorOwl.Blinker do
     Logger.debug("LED off")
 
     {:noreply, [led_pid]}
-  end
-
-  def blink_led_forever(pin, blink_ms) do
-    Logger.debug("Blinking")
-    Logger.debug("Blinking pin #{pin} for #{blink_ms}ms")
-
-    GPIO.write(pin, 1)
-    Process.sleep(blink_ms)
-    GPIO.write(pin, 0)
-    Process.sleep(blink_ms)
-
-    blink_led_forever(pin, blink_ms)
   end
 
   # Helpers
