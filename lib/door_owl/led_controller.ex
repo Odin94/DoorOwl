@@ -26,13 +26,14 @@ defmodule DoorOwl.LedController do
         {"white", @led_pin_white}
       ]
       |> Enum.map(fn {color, pin} -> {color, get_gpio_pid(pin)} end)
-    Logger.debug("#{inspect led_colors_pids}")
+
+    Logger.debug("#{inspect(led_colors_pids)}")
 
     Logger.debug("Started GPIO server for led #{@led_pin_red}")
 
     schedule_blink()
 
-    {:ok, {led_colors_pids, []}}
+    {:ok, {led_colors_pids, ["red", "green"]}}
   end
 
   def handle_info(:blink, state) do
@@ -43,17 +44,14 @@ defmodule DoorOwl.LedController do
     {:noreply, state}
   end
 
-  def blink_led(state = {led_colors_pids, _active_colors}, blink_ms) do
+  def blink_led(state = {led_colors_pids, active_colors}, blink_ms) do
     Logger.debug("Blinking once")
-    Logger.debug("Blinking pin #{@led_pin_red} for #{blink_ms}ms once")
 
-    for {_, pid} <- led_colors_pids, do: GPIO.write(pid, 1)
-
-    Logger.debug("LEDs on")
-    Process.sleep(blink_ms)
-    for {_, pid} <- led_colors_pids, do: GPIO.write(pid, 0)
-
-    Logger.debug("LEDs off")
+    led_colors_pids
+    |> pids_for_active(active_colors)
+    |> for_each(&GPIO.write(&1, 1))
+    |> continue_after(blink_ms)
+    |> for_each(&GPIO.write(&1, 0))
 
     {:noreply, state}
   end
@@ -66,4 +64,20 @@ defmodule DoorOwl.LedController do
 
   # TODO: consider separate GenServer keeping gpio led state so you can't start_link on the same pin twice
   defp get_gpio_pid(pin), do: GPIO.start_link(pin, :output) |> elem(1)
+
+  defp pids_for_active(led_colors_pids, active_colors) do
+    led_colors_pids
+    |> Enum.filter(fn {color, _} -> Enum.member?(active_colors, color) end)
+    |> Enum.map(&elem(&1, 1))
+  end
+
+  defp for_each(enum, fun) do
+    Enum.map(enum, fun)
+    enum
+  end
+
+  defp continue_after(state, sleep_ms) do
+    Process.sleep(sleep_ms)
+    state
+  end
 end
