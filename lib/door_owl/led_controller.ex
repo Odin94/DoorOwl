@@ -34,10 +34,6 @@ defmodule DoorOwl.LedController do
       ]
       |> Enum.map(fn {color, pin} -> {color, get_gpio_pid(pin)} end)
 
-    Logger.debug("#{inspect(led_colors_pids)}")
-
-    Logger.debug("Started GPIO server for led #{@led_pin_red}")
-
     schedule_blink()
 
     {:ok, {led_colors_pids, []}}

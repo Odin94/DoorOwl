@@ -44,12 +44,8 @@ defmodule DoorOwl.TagDetector do
     active_colors =
       colors_tag_addrs
       |> filter_active_addr(addr_rss |> Enum.map(&elem(&1, 0)))
-      |> debug_log("active addrs: ")
       |> to_color_rss(addr_rss)
-      |> debug_log("color_rss: ")
       |> filter_signal_strength()
-
-    Logger.debug("active colors: #{inspect(active_colors)}")
 
     DoorOwl.LedController.set_active_colors(active_colors)
 
@@ -61,7 +57,7 @@ defmodule DoorOwl.TagDetector do
   # Helpers
 
   defp debug_log(thing, text) do
-    Logger.debug("#{text} #{inspect thing}")
+    Logger.debug("#{text} #{inspect(thing)}")
     thing
   end
 
