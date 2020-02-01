@@ -3,7 +3,7 @@ defmodule DoorOwl.TagDetector do
   require Logger
 
   @name __MODULE__
-  @proximity_treshold 182
+  @proximity_treshold Application.get_env(:door_owl, :proximity_treshold)
   @tag_addr_red Application.get_env(:door_owl, :tag_addr_red)
   @tag_addr_green Application.get_env(:door_owl, :tag_addr_green)
 
