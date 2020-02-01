@@ -3,7 +3,7 @@ defmodule DoorOwl.TagDetector do
   require Logger
 
   @name __MODULE__
-  @proximity_treshold Application.get_env(:door_owl, :proximity_treshold)
+  @proximity_threshold Application.get_env(:door_owl, :proximity_threshold)
   @tag_addr_red Application.get_env(:door_owl, :tag_addr_red)
   @tag_addr_green Application.get_env(:door_owl, :tag_addr_green)
 
@@ -43,7 +43,10 @@ defmodule DoorOwl.TagDetector do
 
     active_colors =
       colors_tag_addrs
-      |> filter_active_addr(addr_rss)
+      |> filter_active_addr(addr_rss |> Enum.map(&elem(&1, 0)))
+      |> debug_log("active addrs: ")
+      |> to_color_rss(addr_rss)
+      |> debug_log("color_rss: ")
       |> filter_signal_strength()
 
     Logger.debug("active colors: #{inspect(active_colors)}")
@@ -57,16 +60,32 @@ defmodule DoorOwl.TagDetector do
 
   # Helpers
 
-  defp filter_active_addr(colors_tag_addrs, addr_rss) do
-    active_addrs = addr_rss |> Enum.map(&elem(&1, 1))
+  defp debug_log(thing, text) do
+    Logger.debug("#{text} #{inspect thing}")
+    thing
+  end
 
+  defp filter_active_addr(colors_tag_addrs, active_addrs) do
     colors_tag_addrs
     |> Enum.filter(fn {_color, addr} -> Enum.member?(active_addrs, addr) end)
   end
 
+  defp to_color_rss(colors_tag_addrs, addr_rss) do
+    colors_tag_addrs
+    |> Enum.map(fn {color, addr} -> {color, get_rss_for(addr, addr_rss)} end)
+  end
+
+  defp get_rss_for(addr, addr_rss) do
+    Logger.debug("addr: #{addr}, addr_rss: #{inspect(addr_rss)}")
+
+    addr_rss
+    |> Enum.find(fn {tuple_addr, _rss} -> addr == tuple_addr end)
+    |> elem(1)
+  end
+
   defp filter_signal_strength(active_colors_rss) do
     active_colors_rss
-    |> Enum.filter(fn {_color, rss} -> rss >= @proximity_treshold end)
+    |> Enum.filter(fn {_color, rss} -> rss >= @proximity_threshold end)
     |> Enum.map(&elem(&1, 0))
   end
 
