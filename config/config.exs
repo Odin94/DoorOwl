@@ -79,7 +79,7 @@ config :door_owl,
   led_pin_green: 6,
   tag_addr_red: 281_470_682_535_523,
   tag_addr_green: 281_470_682_534_731,
-  proximity_threshold 182
+  proximity_threshold: 182,
   target: Mix.target()
 
 # Import target specific config. This must remain at the bottom
