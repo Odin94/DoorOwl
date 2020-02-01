@@ -73,8 +73,12 @@ config :nerves_network, :default,
     nameservers: ["8.8.8.8", "8.8.4.4"]
   ]
 
-config :door_owl, :perma_led_pin, 4
-config :door_owl, target: Mix.target()
+config :door_owl,
+  led_pin_red: 3,
+  led_pin_green: 4,
+  led_pin_white: 5,
+  target: Mix.target()
+
 
 # Import target specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
