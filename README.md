@@ -24,6 +24,24 @@ To start your Nerves app:
   * Burn to an SD card with `mix firmware.burn`
   * Open an ssh-iex session with `ssh doorowl@nerves.local`
 
+
+## LED Setup
+Complete this setup before powering on your device, otherwise you may cause damage.
+
+Green cable: Breadboard A-27, GPIO 6
+
+Red cable: Breadboard A-24, GPIO 5
+
+White cable: Breadboard A-21, GPIO 4
+
+Put a resistor right above each cable and connect to the minus side. 2k Ohm worked for me.
+
+Put LEDs matching cable color on breadboard column C matching the positive side with the cables and negative side with the resistors.
+
+Put a cable on the minus side of the breadboard, right below the resistor for the green led. Connect it to the ground pin on your device.
+
+
+
 ## Learn more
 
   * Official docs: https://hexdocs.pm/nerves/getting-started.html
