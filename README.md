@@ -22,8 +22,9 @@ To start your Nerves app:
   * Install dependencies with `mix deps.get`
   * Create firmware with `mix firmware`
   * Burn to an SD card with `mix firmware.burn`
-  * Open an ssh-iex session with `ssh doorowl@nerves.local`
+  * Open an ssh-iex session with `ssh doorowl@nerves.local` after connecting your computer to your device with an ethernet cable
 
+After the first setup you can update the application over your ethernet connection with `mix firmware` followed by running `upload.sh`.
 
 ## LED Setup
 Complete this setup before powering on your device, otherwise you may cause damage.
