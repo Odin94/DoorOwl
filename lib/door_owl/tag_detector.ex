@@ -32,7 +32,6 @@ defmodule DoorOwl.TagDetector do
 
   def handle_info(:scan, state) do
     scan_result = Harald.LE.scan(:bt)
-    # Logger.debug("Original: #{inspect(scan_result)}")
     addr_rss = scan_result |> device_maps_to_addr_and_rss()
     Logger.debug("Scan result: #{inspect(addr_rss)}")
 
@@ -72,8 +71,6 @@ defmodule DoorOwl.TagDetector do
   end
 
   defp get_rss_for(addr, addr_rss) do
-    Logger.debug("addr: #{addr}, addr_rss: #{inspect(addr_rss)}")
-
     addr_rss
     |> Enum.find(fn {tuple_addr, _rss} -> addr == tuple_addr end)
     |> elem(1)

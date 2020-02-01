@@ -19,7 +19,6 @@ defmodule DoorOwl.LedController do
   end
 
   def set_active_colors(colors) do
-    Logger.debug("Setting colors to: #{inspect(colors)}")
     GenServer.cast(@name, {:set_active_colors, colors})
   end
 
@@ -40,6 +39,7 @@ defmodule DoorOwl.LedController do
   end
 
   def handle_cast({:set_active_colors, new_colors}, {led_colors_pids, _active_colors}) do
+    Logger.debug("Setting active colors: #{inspect(new_colors)}")
     {:noreply, {led_colors_pids, new_colors}}
   end
 
