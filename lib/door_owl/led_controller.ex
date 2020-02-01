@@ -9,6 +9,8 @@ defmodule DoorOwl.LedController do
 
   @blink_ms 1000
 
+  # API
+
   def start_link(state \\ []) do
     Logger.debug("starting link in led_controller")
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
@@ -17,35 +19,43 @@ defmodule DoorOwl.LedController do
   # Callbacks
 
   def init(args) do
-    Logger.debug("Starting pin #{@led_pin_red} as output")
-    {:ok, led_pid} = GPIO.start_link(@led_pin_red, :output)
-    Logger.debug("Started GPIO server for led #{@led_pin_red} - pid is #{inspect led_pid}")
+    led_colors_pids =
+      [
+        {"red", @led_pin_red},
+        {"green", @led_pin_green},
+        {"white", @led_pin_white}
+      ]
+      |> Enum.map(fn {color, pin} -> {color, get_gpio_pid(pin)} end)
+    Logger.debug("#{inspect led_colors_pids}")
+
+    Logger.debug("Started GPIO server for led #{@led_pin_red}")
 
     schedule_blink()
 
-    {:ok, [led_pid | args]}
+    {:ok, {led_colors_pids, []}}
   end
 
-  def handle_info(:blink, state = [led_pid | _tail]) do
-    Logger.debug("In handle_info with pin id: #{inspect led_pid}")
-    blink_led(led_pid, @blink_ms)
+  def handle_info(:blink, state) do
+    blink_led(state, @blink_ms)
     Logger.debug("Done blinking once, scheduling new blink")
     schedule_blink()
 
     {:noreply, state}
   end
 
-  def blink_led(led_pid, blink_ms) do
+  def blink_led(state = {led_colors_pids, _active_colors}, blink_ms) do
     Logger.debug("Blinking once")
     Logger.debug("Blinking pin #{@led_pin_red} for #{blink_ms}ms once")
 
-    GPIO.write(led_pid, 1)
-    Logger.debug("LED on")
-    Process.sleep(blink_ms)
-    GPIO.write(led_pid, 0)
-    Logger.debug("LED off")
+    for {_, pid} <- led_colors_pids, do: GPIO.write(pid, 1)
 
-    {:noreply, [led_pid]}
+    Logger.debug("LEDs on")
+    Process.sleep(blink_ms)
+    for {_, pid} <- led_colors_pids, do: GPIO.write(pid, 0)
+
+    Logger.debug("LEDs off")
+
+    {:noreply, state}
   end
 
   # Helpers
@@ -53,4 +63,7 @@ defmodule DoorOwl.LedController do
   defp schedule_blink() do
     Process.send_after(self(), :blink, 1000)
   end
+
+  # TODO: consider separate GenServer keeping gpio led state so you can't start_link on the same pin twice
+  defp get_gpio_pid(pin), do: GPIO.start_link(pin, :output) |> elem(1)
 end

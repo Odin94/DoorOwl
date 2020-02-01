@@ -74,9 +74,9 @@ config :nerves_network, :default,
   ]
 
 config :door_owl,
-  led_pin_red: 3,
-  led_pin_green: 4,
-  led_pin_white: 5,
+  led_pin_red: 4,
+  led_pin_green: 5,
+  led_pin_white: 6,
   target: Mix.target()
 
 
