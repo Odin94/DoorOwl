@@ -7,10 +7,9 @@ defmodule DoorOwl.TagDetector do
   @tag_addr_red Application.get_env(:door_owl, :tag_addr_red)
   @tag_addr_green Application.get_env(:door_owl, :tag_addr_green)
 
-
   # API
 
-  def start_link(state \\ []) do
+  def start_link(_state \\ []) do
     GenServer.start_link(__MODULE__, :ok, name: @name)
   end
 
@@ -36,11 +35,20 @@ defmodule DoorOwl.TagDetector do
     # Logger.debug("Original: #{inspect(scan_result)}")
     addr_rss = scan_result |> device_maps_to_addr_and_rss()
     Logger.debug("Scan result: #{inspect(addr_rss)}")
-    addr_rss_red = Enum.find(addr_rss, fn {addr, _rss} -> addr == @tag_addr_red end)
-    Logger.debug("addr_rss_red: #{inspect(addr_rss_red)}")
 
-    # TODO: set all leds depending on rss. Don't forget addresses that don't show up in the scan
-    set_led(addr_rss_red)
+    colors_tag_addrs = [
+      {"red", @tag_addr_red},
+      {"green", @tag_addr_green}
+    ]
+
+    active_colors =
+      colors_tag_addrs
+      |> filter_active_addr(addr_rss)
+      |> filter_signal_strength()
+
+    Logger.debug("active colors: #{inspect(active_colors)}")
+
+    DoorOwl.LedController.set_active_colors(active_colors)
 
     schedule_scan()
 
@@ -49,16 +57,17 @@ defmodule DoorOwl.TagDetector do
 
   # Helpers
 
-  defp set_led({tag_addr, rss}) when rss >= @proximity_treshold do
-    Logger.debug("---- turning on the lights ----")
+  defp filter_active_addr(colors_tag_addrs, addr_rss) do
+    active_addrs = addr_rss |> Enum.map(&elem(&1, 1))
+
+    colors_tag_addrs
+    |> Enum.filter(fn {_color, addr} -> Enum.member?(active_addrs, addr) end)
   end
 
-  defp set_led({tag_addr, rss}) do
-    Logger.debug("RSS too low: #{rss} < #{@proximity_treshold}")
-  end
-
-  defp set_led(_) do
-    Logger.debug("Signal not found")
+  defp filter_signal_strength(active_colors_rss) do
+    active_colors_rss
+    |> Enum.filter(fn {_color, rss} -> rss >= @proximity_treshold end)
+    |> Enum.map(&elem(&1, 0))
   end
 
   defp schedule_scan() do

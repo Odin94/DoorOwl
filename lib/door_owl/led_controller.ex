@@ -55,7 +55,7 @@ defmodule DoorOwl.LedController do
     {:noreply, state}
   end
 
-  def blink_led(state = {led_colors_pids, active_colors}, blink_ms) do
+  def blink_led({led_colors_pids, active_colors}, blink_ms) do
     Logger.debug("Blinking once")
 
     led_colors_pids
