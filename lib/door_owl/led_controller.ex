@@ -45,15 +45,12 @@ defmodule DoorOwl.LedController do
 
   def handle_info(:blink, state) do
     blink_led(state, @blink_ms)
-    Logger.debug("Done blinking once, scheduling new blink")
     schedule_blink()
 
     {:noreply, state}
   end
 
   def blink_led({led_colors_pids, active_colors}, blink_ms) do
-    Logger.debug("Blinking once")
-
     led_colors_pids
     |> pids_for_active(active_colors)
     |> for_each(&GPIO.write(&1, 1))
