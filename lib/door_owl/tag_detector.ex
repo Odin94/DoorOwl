@@ -4,7 +4,9 @@ defmodule DoorOwl.TagDetector do
 
   @name __MODULE__
   @proximity_treshold 182
-  @red_tag_addr 281_470_682_535_523
+  @tag_addr_red Application.get_env(:door_owl, :tag_addr_red)
+  @tag_addr_green Application.get_env(:door_owl, :tag_addr_green)
+
 
   # API
 
@@ -34,7 +36,7 @@ defmodule DoorOwl.TagDetector do
     # Logger.debug("Original: #{inspect(scan_result)}")
     addr_rss = scan_result |> device_maps_to_addr_and_rss()
     Logger.debug("Scan result: #{inspect(addr_rss)}")
-    addr_rss_red = Enum.find(addr_rss, fn {addr, _rss} -> addr == @red_tag_addr end)
+    addr_rss_red = Enum.find(addr_rss, fn {addr, _rss} -> addr == @tag_addr_red end)
     Logger.debug("addr_rss_red: #{inspect(addr_rss_red)}")
 
     # TODO: set all leds depending on rss. Don't forget addresses that don't show up in the scan
