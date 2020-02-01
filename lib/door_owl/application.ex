@@ -17,10 +17,12 @@ defmodule DoorOwl.Application do
        adapter: {Harald.Transport.UART, device: "/dev/ttyAMA0", uart_opts: [speed: 115_200]}}
 
     tag_detector = {DoorOwl.TagDetector, []}
+    led_controller = {DoorOwl.LedController, []}
 
     children =
       [
         harald,
+        led_controller,
         tag_detector
       ] ++ children(target())
 
