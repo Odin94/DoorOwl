@@ -9,16 +9,23 @@ defmodule DoorOwl.LedController do
 
   @blink_ms 1000
 
+  @name __MODULE__
+
   # API
 
   def start_link(state \\ []) do
     Logger.debug("starting link in led_controller")
-    GenServer.start_link(__MODULE__, state, name: __MODULE__)
+    GenServer.start_link(__MODULE__, state, name: @name)
+  end
+
+  def set_active_colors(colors) do
+    Logger.debug("Setting colors to: #{inspect(colors)}")
+    GenServer.cast(@name, {:set_active_colors, colors})
   end
 
   # Callbacks
 
-  def init(args) do
+  def init(_args) do
     led_colors_pids =
       [
         {"red", @led_pin_red},
@@ -33,7 +40,11 @@ defmodule DoorOwl.LedController do
 
     schedule_blink()
 
-    {:ok, {led_colors_pids, ["red", "green"]}}
+    {:ok, {led_colors_pids, []}}
+  end
+
+  def handle_cast({:set_active_colors, new_colors}, {led_colors_pids, _active_colors}) do
+    {:noreply, {led_colors_pids, new_colors}}
   end
 
   def handle_info(:blink, state) do
@@ -52,14 +63,12 @@ defmodule DoorOwl.LedController do
     |> for_each(&GPIO.write(&1, 1))
     |> continue_after(blink_ms)
     |> for_each(&GPIO.write(&1, 0))
-
-    {:noreply, state}
   end
 
   # Helpers
 
   defp schedule_blink() do
-    Process.send_after(self(), :blink, 1000)
+    Process.send_after(self(), :blink, 500)
   end
 
   # TODO: consider separate GenServer keeping gpio led state so you can't start_link on the same pin twice
