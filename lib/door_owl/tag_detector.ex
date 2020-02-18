@@ -55,11 +55,6 @@ defmodule DoorOwl.TagDetector do
 
   # Helpers
 
-  defp debug_log(thing, text) do
-    Logger.debug("#{text} #{inspect(thing)}")
-    thing
-  end
-
   defp filter_active_addr(colors_tag_addrs, active_addrs) do
     colors_tag_addrs
     |> Enum.filter(fn {_color, addr} -> Enum.member?(active_addrs, addr) end)
